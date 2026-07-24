@@ -1,0 +1,26 @@
+{
+  "tracked_accounts": [
+    "ethanbearman",
+    "hasanthehun",
+    "iDubbbzTV",
+    "Denims2x",
+    "froganaut",
+    "Kaceytron",
+    "stavroulaki",
+    "h3podcast"
+  ],
+  "keywords": [
+    "Hasan Piker",
+    "H3 podcast",
+    "iDubbbz",
+    "Ethan Klein",
+    "Denims",
+    "Frogan"
+  ],
+  "score_weights": {
+    "velocity": 0.5,
+    "engagement_ratio": 0.3,
+    "controversy": 0.2
+  },
+  "lookback_days": 7
+}

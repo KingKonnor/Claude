@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Drama Radar</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header class="app-header">
+    <h1>Drama Radar</h1>
+    <p id="last-updated" class="last-updated">Loading&hellip;</p>
+  </header>
+
+  <nav class="filter-bar" role="tablist" aria-label="Filter posts">
+    <button class="filter-btn active" data-filter="all" role="tab" aria-selected="true">All</button>
+    <button class="filter-btn" data-filter="tracked_account" role="tab" aria-selected="false">Tracked Accounts</button>
+    <button class="filter-btn" data-filter="keyword_search" role="tab" aria-selected="false">Keyword Search</button>
+  </nav>
+
+  <main id="post-list" class="post-list">
+    <p class="status-message">Loading posts&hellip;</p>
+  </main>
+
+  <template id="post-card-template">
+    <article class="post-card">
+      <div class="score-badge">0</div>
+      <div class="post-body">
+        <div class="post-meta">
+          <span class="author-name"></span>
+          <span class="author-username"></span>
+          <span class="followers"></span>
+        </div>
+        <p class="post-text"></p>
+        <div class="score-breakdown">
+          <span class="score-chip velocity" title="Engagement velocity">V <b></b></span>
+          <span class="score-chip ratio" title="Engagement / follower ratio">E <b></b></span>
+          <span class="score-chip controversy" title="Reply-to-like ratio (controversy)">C <b></b></span>
+        </div>
+        <div class="post-footer">
+          <span class="post-time"></span>
+          <span class="source-tag"></span>
+          <a class="post-link" href="#" target="_blank" rel="noopener noreferrer">View on X &rarr;</a>
+        </div>
+      </div>
+    </article>
+  </template>
+
+  <script src="app.js"></script>
+</body>
+</html>

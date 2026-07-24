@@ -1,0 +1,46 @@
+name: Fetch and score X posts
+
+on:
+  schedule:
+    # Runs twice a day, ~12 hours apart (06:00 and 18:00 UTC).
+    - cron: "0 6,18 * * *"
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+concurrency:
+  group: fetch-and-score
+  cancel-in-progress: false
+
+jobs:
+  fetch-and-score:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: pip install -r scripts/requirements.txt
+
+      - name: Fetch and score posts
+        env:
+          X_BEARER_TOKEN: ${{ secrets.X_BEARER_TOKEN }}
+        run: python scripts/fetch_and_score.py
+
+      - name: Commit and push results
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add docs/results.json
+          if git diff --cached --quiet; then
+            echo "No changes to results.json, skipping commit."
+          else
+            git commit -m "Update results.json [skip ci]"
+            git push
+          fi
