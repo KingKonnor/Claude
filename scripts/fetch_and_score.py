@@ -28,11 +28,9 @@ MAX_RESULTS = 100
 
 DEFAULT_WEIGHTS = {"velocity": 0.5, "engagement_ratio": 0.3, "controversy": 0.2}
 
-
 def load_config():
     with open(CONFIG_PATH) as f:
         return json.load(f)
-
 
 def load_existing_posts():
     if RESULTS_PATH.exists():
@@ -41,7 +39,6 @@ def load_existing_posts():
         return {post["id"]: post for post in data.get("posts", [])}
     return {}
 
-
 def bearer_token():
     token = os.environ.get("X_BEARER_TOKEN")
     if not token:
@@ -49,16 +46,13 @@ def bearer_token():
         sys.exit(1)
     return token
 
-
 def parse_created_at(created_at_str):
     fmt = "%Y-%m-%dT%H:%M:%S.%fZ" if "." in created_at_str else "%Y-%m-%dT%H:%M:%SZ"
     return datetime.strptime(created_at_str, fmt).replace(tzinfo=timezone.utc)
 
-
 def hours_since(created_at_str):
     delta = datetime.now(timezone.utc) - parse_created_at(created_at_str)
     return max(delta.total_seconds() / 3600.0, 0.25)
-
 
 def search_recent(query, token):
     headers = {"Authorization": f"Bearer {token}"}
@@ -79,11 +73,9 @@ def search_recent(query, token):
     users = {u["id"]: u for u in body.get("includes", {}).get("users", [])}
     return tweets, users
 
-
 def build_account_query(accounts):
     from_clause = " OR ".join(f"from:{a}" for a in accounts)
     return f"({from_clause}) -is:retweet"
-
 
 def score_post(likes, retweets, replies, quotes, followers, hours, weights):
     """Combine three signals into a 0-100 viral score.
@@ -117,7 +109,6 @@ def score_post(likes, retweets, replies, quotes, followers, hours, weights):
         "controversy_score": round(controversy_score, 2),
         "overall": round(min(100.0, overall), 2),
     }
-
 
 def build_post_record(tweet, users, source_type, matched_keyword, weights):
     author = users.get(tweet["author_id"], {})
@@ -153,12 +144,12 @@ def build_post_record(tweet, users, source_type, matched_keyword, weights):
         record["matched_keyword"] = matched_keyword
     return record
 
-
 def main():
     config = load_config()
     token = bearer_token()
     weights = config.get("score_weights", DEFAULT_WEIGHTS)
     lookback_days = config.get("lookback_days", 7)
+    min_engagement = config.get("min_engagement", 0)
 
     posts_by_id = load_existing_posts()
 
@@ -183,7 +174,11 @@ def main():
         time.sleep(1)
 
     cutoff = datetime.now(timezone.utc) - timedelta(days=lookback_days)
-    posts = [p for p in posts_by_id.values() if parse_created_at(p["created_at"]) >= cutoff]
+    posts = [
+        p for p in posts_by_id.values()
+        if parse_created_at(p["created_at"]) >= cutoff
+        and sum(p["metrics"].values()) >= min_engagement
+    ]
     posts.sort(key=lambda p: p["score"]["overall"], reverse=True)
 
     RESULTS_PATH.parent.mkdir(parents=True, exist_ok=True)
@@ -198,7 +193,6 @@ def main():
         )
         f.write("\n")
     print(f"Wrote {len(posts)} posts to {RESULTS_PATH}")
-
 
 if __name__ == "__main__":
     main()
