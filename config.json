@@ -22,5 +22,6 @@
     "engagement_ratio": 0.3,
     "controversy": 0.2
   },
-  "lookback_days": 7
+  "lookback_days": 7,
+  "min_engagement": 10
 }
