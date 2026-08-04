@@ -2,8 +2,9 @@ name: Fetch and score X posts
 
 on:
   schedule:
-    # Runs twice a day, ~12 hours apart (06:00 and 18:00 UTC).
-    - cron: "0 6,18 * * *"
+    # Runs once every other day at 06:00 UTC.
+    - cron: "0 6 */2 * *"
+
   workflow_dispatch: {}
 
 permissions:
